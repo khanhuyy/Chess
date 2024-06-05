@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -340,9 +339,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileMaterial: {fileID: 2100000, guid: 0597896cb76e85f209da714c88cceaa1, type: 2}
   hoverMaterial: {fileID: 2100000, guid: 3a9e7ac33c91ace35ab0c3c57005ea03, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: 30842cf1f5ac959d2b34afcb2f911698, type: 2}
   tileSize: 1
   yOffset: 0.1
   boardCenter: {x: 0, y: 0, z: 0}
+  deathSize: 0.3
+  deathChessmanSpaceBetween: 0.3
+  dragOffset: 1
   prefabs:
   - {fileID: 1432260816013872, guid: f3c7a38518fe4e14d915db07ecf8aabf, type: 3}
   - {fileID: 1176747802191566, guid: 819d4a16a2f59b94fa0f4ae219f5fb2d, type: 3}
