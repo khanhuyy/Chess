@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class Pawn : Chessman
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private bool moved = false;
+    public override List<Vector2Int> GetAvailableMoves(ref Chessman[,] board, int width) {
+        List<Vector2Int> r = new List<Vector2Int>();
+        int direction = ((team == ChessmanTeam.White) ? 1 : -1);
+        if (board[currentColumn, currentRow + direction] == null) {
+            r.Add(new Vector2Int(currentColumn, currentRow + direction));
+        }
+        if (board[currentColumn, currentRow + direction * 2] == null && !moved)
+        {
+            r.Add(new Vector2Int(currentColumn, currentRow + direction * 2));
+        }
+        if (currentColumn != width - 1) {
+            
+        }
+        return r;
     }
 }
