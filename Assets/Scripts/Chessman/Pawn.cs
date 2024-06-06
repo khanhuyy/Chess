@@ -4,20 +4,29 @@ using UnityEngine;
 
 public class Pawn : Chessman
 {
-    private bool moved = false;
     public override List<Vector2Int> GetAvailableMoves(ref Chessman[,] board, int width) {
-        List<Vector2Int> r = new List<Vector2Int>();
+        List<Vector2Int> result = new List<Vector2Int>();
         int direction = ((team == ChessmanTeam.White) ? 1 : -1);
         if (board[currentColumn, currentRow + direction] == null) {
-            r.Add(new Vector2Int(currentColumn, currentRow + direction));
+            result.Add(new Vector2Int(currentColumn, currentRow + direction));
         }
         if (board[currentColumn, currentRow + direction * 2] == null && !moved)
         {
-            r.Add(new Vector2Int(currentColumn, currentRow + direction * 2));
+            result.Add(new Vector2Int(currentColumn, currentRow + direction * 2));
         }
+
+        // Kill kill kill
         if (currentColumn != width - 1) {
-            
+            if (board[currentColumn + 1, currentRow + direction] != null && board[currentColumn + 1, currentRow + direction].team != team)
+                result.Add(new Vector2Int(currentColumn + 1, currentRow + direction));
         }
-        return r;
+        if (currentColumn != 0) {
+            if (board[currentColumn - 1, currentRow + direction] != null && board[currentColumn - 1, currentRow + direction].team != team)
+                result.Add(new Vector2Int(currentColumn - 1, currentRow + direction));
+        }
+
+        // promo
+
+        return result;
     }
 }

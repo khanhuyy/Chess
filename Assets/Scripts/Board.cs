@@ -84,7 +84,6 @@ public class Board : MonoBehaviour
 
             if(Input.GetMouseButtonDown(0)) {
                 if(chessmans[hitPosition.x, hitPosition.y] != null) {
-                    Debug.Log(chessmans[hitPosition.x, hitPosition.y].team);
                     if (chessmans[hitPosition.x, hitPosition.y].team == turn) {
                         currentlyPicked = chessmans[hitPosition.x, hitPosition.y];
                         availableMoves = currentlyPicked.GetAvailableMoves(ref chessmans, WIDTH);
@@ -172,7 +171,7 @@ public class Board : MonoBehaviour
         }
         chessmans[col, row] = srcChessman;
         chessmans[previousPosotion.x, previousPosotion.y] = null;
-        PositionSingleChessman(col, row);
+        PositionSingleChessman(col, row, false, true);
         turn = (turn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
         return true;
     }
@@ -261,10 +260,10 @@ public class Board : MonoBehaviour
                     PositionSingleChessman(col, row, true);
     }
 
-    private void PositionSingleChessman(int col, int row, bool force = false) {
+    private void PositionSingleChessman(int col, int row, bool force = false, bool isMove = false) {
         chessmans[col, row].currentRow = row;
         chessmans[col, row].currentColumn = col;
-        chessmans[col, row].SetPosition(GetTileCenter(col, row), force);
+        chessmans[col, row].SetPosition(GetTileCenter(col, row), force, isMove);
     }
 
     private void HighlightTiles() {

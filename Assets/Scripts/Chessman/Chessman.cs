@@ -23,6 +23,7 @@ public class Chessman : MonoBehaviour
     public int currentColumn;
     public ChessmanTeam team;
     public ChessmanType type;
+    public bool moved = false;
 
     private Vector3 desiredPosition;
     private Vector3 desiredScale = Vector3.one;
@@ -42,9 +43,11 @@ public class Chessman : MonoBehaviour
         return r;
     }
 
-
-    public virtual void SetPosition(Vector3 position, bool force = false) {
+    public virtual void SetPosition(Vector3 position, bool force = false, bool isRealyMove = false) {
         desiredPosition = position;
+        if (!moved && isRealyMove) {
+            moved = true;
+        }
         if (force) {
             transform.position = desiredPosition;
         }

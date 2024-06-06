@@ -122,4 +122,5 @@ MonoBehaviour:
   currentRow: 0
   currentColumn: 0
   team: 0
-  type: 0
+  type: 1
+  moved: 0
