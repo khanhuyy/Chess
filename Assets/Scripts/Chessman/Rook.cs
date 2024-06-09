@@ -24,7 +24,6 @@ public class Rook : Chessman
             } else {
                 if (board[currentColumn, row].team != team) {
                     result.Add(new Vector2Int(currentColumn, row));
-                    Debug.Log("add");
                 }
                 break;
             }
