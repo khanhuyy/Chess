@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Networking.Transport;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -37,15 +38,21 @@ public class Board : MonoBehaviour
     private Vector3 centerChessmanOffset;
     private SpecialMove specialMove;
 
+    // Online game var
+    private int playerCount = 0;
+    private ChessmanTeam onlineTurn;
+    private bool isLocalGame = true;
+
     private ChessmanTeam GetNextTurnTeam() {
         return turn == ChessmanTeam.White ? ChessmanTeam.Black : ChessmanTeam.White;
     }
-    private void Awake()
+    private void Start()
     {
         turn = ChessmanTeam.White;
         GenerateTiles(tileSize, WIDTH);
         SpawnAllChessmans();
         PositionAllChessmans();
+        RegisterEvents();
     }
 
     private void Update()
@@ -87,7 +94,7 @@ public class Board : MonoBehaviour
             // picked chessman
             if(Input.GetMouseButtonDown(0)) {
                 if(chessmans[hitPosition.x, hitPosition.y] != null) {
-                    if (chessmans[hitPosition.x, hitPosition.y].team == turn) {
+                    if (chessmans[hitPosition.x, hitPosition.y].team == turn && onlineTurn == turn) {
                         currentlyPicked = chessmans[hitPosition.x, hitPosition.y];
                         availableMoves = currentlyPicked.GetAvailableMoves(ref chessmans, WIDTH);
                         specialMove = currentlyPicked.GetSpecialMoves(ref chessmans, ref moveList, ref availableMoves);
@@ -99,12 +106,23 @@ public class Board : MonoBehaviour
 
             if (currentlyPicked != null && Input.GetMouseButtonUp(0)) {
                 Vector2Int previousPosition = new Vector2Int(currentlyPicked.currentColumn, currentlyPicked.currentRow);
-                bool isValidMove = MoveTo(currentlyPicked, hitPosition.x, hitPosition.y);
-                if (!isValidMove) {
+                if(ContainsValidMove(ref availableMoves, new Vector2Int(hitPosition.x, hitPosition.y))) {
+                    MoveTo(previousPosition.x, previousPosition.y, hitPosition.x, hitPosition.y);
+                    // Online impl
+                    NetMakeMove mm = new NetMakeMove();
+                    mm.originalColumn = previousPosition.x;
+                    mm.originalRow = previousPosition.y;
+                    mm.destinationColumn = hitPosition.x;
+                    mm.destinationRow = hitPosition.y;
+                    mm.team = onlineTurn;
+                    Client.Instance.SendToServer(mm);
+                    // RemoveHighlightTiles();
+                } else {
                     currentlyPicked.SetPosition(GetTileCenter(previousPosition.x, previousPosition.y));
+                    currentlyPicked = null;
+                    RemoveHighlightTiles();
                 }
-                currentlyPicked = null;
-                RemoveHighlightTiles();
+                
             }
         }
         else
@@ -142,16 +160,14 @@ public class Board : MonoBehaviour
         return new Vector3(col * tileSize, yOffset, row * tileSize) - bounds + centerChessmanOffset;
     }
 
-    private bool MoveTo(Chessman currentChessman, int col, int row) {
-        if(!ContainsValidMove(ref availableMoves, new Vector2Int(col, row))) {
-            return false;
-        }
-        
-        Vector2Int previousPosotion = new Vector2Int(currentChessman.currentColumn, currentChessman.currentRow);
-        if (chessmans[col, row] != null) {
-            Chessman opponentChessman = chessmans[col, row];
+    private void MoveTo(int originalColumn, int originalRow, int destinationColumn, int destinationRow) {
+
+        Chessman currentChessman = chessmans[originalColumn, originalRow];
+        Vector2Int previousPosotion = new Vector2Int(originalColumn, originalRow);
+        if (chessmans[destinationColumn, destinationRow] != null) {
+            Chessman opponentChessman = chessmans[destinationColumn, destinationRow];
             if (currentChessman.team == opponentChessman.team) {
-                return false;
+                return;
             } else {
                 if (opponentChessman.team == ChessmanTeam.White) {
                     deadBlacks.Add(opponentChessman);
@@ -175,16 +191,19 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        chessmans[col, row] = currentChessman;
+        chessmans[destinationColumn, destinationRow] = currentChessman;
         chessmans[previousPosotion.x, previousPosotion.y] = null;
-        PositionSingleChessman(col, row, false, true);
-        moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(col, row) });
+        PositionSingleChessman(destinationColumn, destinationRow, false, true);
+        moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(destinationColumn, destinationRow) });
         SolveSpecialMove();
         if (CheckMate()) {
             Victory(turn);
         }
         turn = (turn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
-        return true;
+        if (isLocalGame) {
+            onlineTurn = (onlineTurn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
+        }
+        return;
     }
 
     private void GenerateTiles(float tileSize, int width)
@@ -498,4 +517,88 @@ public class Board : MonoBehaviour
                     return new Vector2Int(x, y);
         return -Vector2Int.one; // Invalid
     }
+
+    #region 
+    private void RegisterEvents() {
+        NetUtility.S_WELCOME += OnWelcomeServer;
+        NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
+        NetUtility.C_WELCOME += OnWelcomeClient;
+        NetUtility.C_START_GAME += OnStartGameClient;
+        NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
+        GameUI.Instance.SetLocalGame += OnSetLocalGame;
+    }
+
+    private void UnRegisterEvents() {
+        NetUtility.S_WELCOME -= OnWelcomeServer;
+        NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
+        NetUtility.C_WELCOME -= OnWelcomeClient;
+        NetUtility.C_START_GAME -= OnStartGameClient;
+        NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
+        GameUI.Instance.SetLocalGame -= OnSetLocalGame;
+    }
+    // Server
+    private void OnWelcomeServer(NetMessage msg, NetworkConnection nc) {
+        // Client has connected, assign a team and return the message back to server
+        NetWelcome nw = msg as NetWelcome;
+
+        // Assign a team
+        ++playerCount;
+        if (playerCount == 1) {
+            nw.AssignedTeam = ChessmanTeam.White;
+        } else {
+            nw.AssignedTeam = ChessmanTeam.Black;
+        }
+
+        // Return back to the client
+        Server.Instance.SendToClient(nc, nw);
+
+        if (playerCount == 1) {
+            Server.Instance.Broadcast(new NetStartGame());
+        }
+    }
+
+    private void OnMakeMoveServer(NetMessage msg, NetworkConnection nc) {
+        NetMakeMove mm = msg as NetMakeMove;
+
+        // some validation
+
+
+        Server.Instance.Broadcast(msg);
+    }
+
+    private void OnWelcomeClient(NetMessage msg) {
+        // Receive the connection message
+        NetWelcome nw = msg as NetWelcome;
+
+        // assign team
+        // turn = nw.AssignedTeam;
+        onlineTurn = nw.AssignedTeam;
+        Debug.Log($"My assigned team is {nw.AssignedTeam}");
+        if (isLocalGame && onlineTurn == ChessmanTeam.White) {
+            Server.Instance.Broadcast(new NetStartGame());
+        }
+    }
+
+    private void OnStartGameClient(NetMessage msg) {
+        // need change the camera
+        GameUI.Instance.ChangeCamera((onlineTurn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
+    }
+
+    private void OnMakeMoveClient(NetMessage msg) {
+        NetMakeMove mm = msg as NetMakeMove;
+        Debug.Log($"MM : {mm.team} : ({mm.originalColumn}, {mm.originalRow}) -> ({mm.destinationColumn}, {mm.destinationRow})");
+        // ?? 
+        if (mm.team != onlineTurn) {
+            Chessman target = chessmans[mm.originalColumn, mm.originalRow];
+            availableMoves = target.GetAvailableMoves(ref chessmans, WIDTH);
+            specialMove = target.GetSpecialMoves(ref chessmans, ref moveList, ref availableMoves);
+            MoveTo(mm.originalColumn, mm.originalRow, mm.destinationColumn, mm.destinationRow);
+        }
+    }
+
+    private void OnSetLocalGame(bool local) {
+        isLocalGame = local;
+    }
+
+    #endregion
 }
