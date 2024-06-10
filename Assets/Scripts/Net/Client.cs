@@ -24,7 +24,7 @@ public class Client : MonoBehaviour
         driver = NetworkDriver.Create();
         NetworkEndpoint endpoint = NetworkEndpoint.Parse(ip, port);
         
-        connection = driver.Connect(endpoint);
+        connection = driver.Connect(endpoint); // LOCAL HOST
 
         Debug.Log("Attemping to connect to Server on " + endpoint.Address);
         isActive = true;
