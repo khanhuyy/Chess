@@ -26,7 +26,7 @@ public class GameUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        // RegisterEvents();
+        RegisterEvents();
     }
 
     public void ChangeCamera(CameraAngle index)
@@ -35,6 +35,7 @@ public class GameUI : MonoBehaviour
         {
             cameraAngles[i].SetActive(false);
         }
+        Debug.Log(index);
         cameraAngles[(int)index].SetActive(true);
     }
 

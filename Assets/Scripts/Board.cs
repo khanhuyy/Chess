@@ -666,7 +666,7 @@ public class Board : MonoBehaviour
         SpawnAllChessmans();
         PositionAllChessmans();
         turn = ChessmanTeam.White;
-        onlineTurn = ChessmanTeam.White;
+        // onlineTurn = ChessmanTeam.Black;
     }
 
     public void OnMenuButton()
@@ -704,7 +704,7 @@ public class Board : MonoBehaviour
             for (int y = 0; y < WIDTH; y++)
                 if (tiles[x, y] == hitInfo)
                     return new Vector2Int(x, y);
-        return INVALID_HOVER; // Invalid
+        return INVALID_HOVER;
     }
 
     #region "Online game solving"
@@ -794,6 +794,7 @@ public class Board : MonoBehaviour
     private void OnStartGameClient(NetMessage msg)
     {
         // need change the camera
+        Debug.Log("In start game client but don't change camera");
         GameUI.Instance.ChangeCamera((onlineTurn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
     }
 
