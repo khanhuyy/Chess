@@ -666,7 +666,7 @@ public class Board : MonoBehaviour
         SpawnAllChessmans();
         PositionAllChessmans();
         turn = ChessmanTeam.White;
-        // onlineTurn = ChessmanTeam.Black;
+        onlineTurn = ChessmanTeam.Black; // there is no body in the room, first join will update this turn
     }
 
     public void OnMenuButton()
@@ -755,7 +755,7 @@ public class Board : MonoBehaviour
         // Return back to the client
         Server.Instance.SendToClient(nc, nw);
 
-        if (playerCount == 1)
+        if (playerCount == 2)
         {
             Server.Instance.Broadcast(new NetStartGame());
         }
@@ -784,7 +784,7 @@ public class Board : MonoBehaviour
         // assign team
         // turn = nw.AssignedTeam;
         onlineTurn = nw.AssignedTeam;
-        Debug.Log($"My assigned team is {nw.AssignedTeam}");
+        // Debug.Log($"My assigned team is {nw.AssignedTeam}");
         if (isLocalGame && onlineTurn == ChessmanTeam.White)
         {
             Server.Instance.Broadcast(new NetStartGame());
@@ -801,7 +801,8 @@ public class Board : MonoBehaviour
     private void OnMakeMoveClient(NetMessage msg)
     {
         NetMakeMove mm = msg as NetMakeMove;
-        Debug.Log($"MM : {mm.team} : ({mm.originalColumn}, {mm.originalRow}) -> ({mm.destinationColumn}, {mm.destinationRow})");
+        // string chessmanName = chessmans[mm.destinationColumn, mm.destinationRow].gameObject.name;
+        Debug.Log($"{mm.team} move: ({mm.originalColumn}, {mm.originalRow}) -> ({mm.destinationColumn}, {mm.destinationRow})");
         // ?? 
         if (mm.team != onlineTurn)
         {

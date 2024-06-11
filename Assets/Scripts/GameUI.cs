@@ -18,6 +18,7 @@ public class GameUI : MonoBehaviour
     public Server server;
     public Client client;
     [SerializeField] private Animator menuAnimator;
+    [SerializeField] private GameObject generalLayout;
     [SerializeField] private TMP_InputField addressInput;
     [SerializeField] private GameObject[] cameraAngles;
 
@@ -37,6 +38,11 @@ public class GameUI : MonoBehaviour
         }
         Debug.Log(index);
         cameraAngles[(int)index].SetActive(true);
+    }
+
+    public void SetGeneralLayoutActive(bool isActive)
+    {
+        generalLayout.SetActive(isActive);
     }
 
     public void OnLocalGameButton()
@@ -100,6 +106,7 @@ public class GameUI : MonoBehaviour
     private void OnStartGameClient(NetMessage msg)
     {
         menuAnimator.SetTrigger("InGameMenu");
+        generalLayout.gameObject.SetActive(false);
     }
     #endregion
 }
