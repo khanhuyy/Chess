@@ -21,6 +21,11 @@ public class Board : MonoBehaviour
     [SerializeField] private Button rematchButton;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip captureSound;
+    [SerializeField] private AudioClip moveSound;
+    [SerializeField] private AudioClip theQueenSound;
+    [SerializeField] private AudioClip theRookSound;
+    [SerializeField] private AudioClip theKnightSound;
+    [SerializeField] private AudioClip theBishopSound;
 
     [Header("Prefabs & Materials")]
     [SerializeField] private GameObject[] prefabs;
@@ -420,13 +425,17 @@ public class Board : MonoBehaviour
                 {
                     Victory(opponentChessman.team);
                 }
-                audioSource.clip = captureSound;
+                audioSource.clip = captureSound; // todo move to sound manager
                 audioSource.Play(0);
             }
+        } else {
+            audioSource.clip = moveSound;
+            audioSource.Play(0);
         }
         chessmans[destinationColumn, destinationRow] = currentChessman;
         chessmans[previousPosotion.x, previousPosotion.y] = null;
         PositionSingleChessman(destinationColumn, destinationRow, false, true);
+
         moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(destinationColumn, destinationRow) });
         SolveSpecialMove();
         if (CheckMate())
@@ -440,6 +449,7 @@ public class Board : MonoBehaviour
         if (isLocalGame)
         {
             onlineTurn = (onlineTurn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
+            GameUI.Instance.ChangeCamera((turn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
         }
         return;
     }
@@ -807,8 +817,6 @@ public class Board : MonoBehaviour
 
     private void OnStartGameClient(NetMessage msg)
     {
-        // need change the camera
-        Debug.Log("In start game client but don't change camera");
         GameUI.Instance.ChangeCamera((onlineTurn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
     }
 

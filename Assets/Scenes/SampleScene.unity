@@ -286,14 +286,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 40919614}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5224985, y: 0, z: 0, w: 0.8526402}
-  m_LocalPosition: {x: 0, y: 10, z: -5}
+  m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
+  m_LocalPosition: {x: 0, y: 7, z: -6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1828601336}
   m_Father: {fileID: 849657959}
-  m_LocalEulerAnglesHint: {x: 63, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: 0, z: 0}
 --- !u!114 &40919616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1470,14 +1470,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223974226}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.8526402, z: -0.5224985, w: 0}
-  m_LocalPosition: {x: 0, y: 10, z: 5}
+  m_LocalRotation: {x: 0, y: 0.9063079, z: -0.42261827, w: 0}
+  m_LocalPosition: {x: 0, y: 7, z: 6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 782628376}
   m_Father: {fileID: 849657959}
-  m_LocalEulerAnglesHint: {x: 63, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: 180, z: 0}
 --- !u!114 &223974228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9319,6 +9319,11 @@ MonoBehaviour:
   rematchButton: {fileID: 1751850769}
   audioSource: {fileID: 1536733983}
   captureSound: {fileID: 8300000, guid: 46f1c668c23d06cebaf47f4a39d0c43d, type: 3}
+  moveSound: {fileID: 8300000, guid: c9a76eb19e7ac705ebb0c4a25d18079e, type: 3}
+  theQueenSound: {fileID: 0}
+  theRookSound: {fileID: 0}
+  theKnightSound: {fileID: 0}
+  theBishopSound: {fileID: 0}
   prefabs:
   - {fileID: 1432260816013872, guid: f3c7a38518fe4e14d915db07ecf8aabf, type: 3}
   - {fileID: 1176747802191566, guid: 819d4a16a2f59b94fa0f4ae219f5fb2d, type: 3}
