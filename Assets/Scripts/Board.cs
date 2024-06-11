@@ -64,6 +64,7 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
+        Unmove();
         if (!currentCamera)
         {
             currentCamera = Camera.main;
@@ -281,6 +282,8 @@ public class Board : MonoBehaviour
             chessman.type = type;
             chessman.team = team;
             chessman.GetComponent<MeshRenderer>().material = teamMaterials[(int)team];
+            if (type == ChessmanType.Knight && team == ChessmanTeam.Black)
+                chessman.SetLocalScale(new Vector3(-1, 1, 1));
         }
 
         return chessman;
@@ -288,6 +291,15 @@ public class Board : MonoBehaviour
     #endregion
 
     #region "Move Solving"
+    private void Unmove()
+    {
+        if (isLocalGame)
+        {
+            // reverse move here
+            return;
+        }
+        return;
+    }
     private void PositionAllChessmans()
     {
         for (int row = 0; row < WIDTH; row++)
@@ -438,9 +450,17 @@ public class Board : MonoBehaviour
 
         moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(destinationColumn, destinationRow) });
         SolveSpecialMove();
-        if (CheckMate())
+        bool checkmate = CheckMate();
+        if (checkmate)
         {
             Victory(turn);
+        } 
+        else 
+        {
+            if (isLocalGame)
+            {
+                GameUI.Instance.ChangeCamera((turn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
+            }
         }
         if (currentlyPicked)
             currentlyPicked = null;
@@ -449,7 +469,8 @@ public class Board : MonoBehaviour
         if (isLocalGame)
         {
             onlineTurn = (onlineTurn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
-            GameUI.Instance.ChangeCamera((turn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
+            if (!checkmate)
+                GameUI.Instance.ChangeCamera((turn == ChessmanTeam.White) ? CameraAngle.WhiteTeam : CameraAngle.BlackTeam);
         }
         return;
     }
@@ -711,6 +732,7 @@ public class Board : MonoBehaviour
         turn = ChessmanTeam.White;
         if (isLocalGame) {
             onlineTurn = ChessmanTeam.White;
+            GameUI.Instance.ChangeCamera(CameraAngle.WhiteTeam);
         }
     }
 
