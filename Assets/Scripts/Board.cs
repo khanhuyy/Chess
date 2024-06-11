@@ -48,10 +48,6 @@ public class Board : MonoBehaviour
     private bool isLocalGame = true;
     private bool[] playerConfirmRematch = new bool[2];
 
-    private ChessmanTeam GetNextTurnTeam()
-    {
-        return turn == ChessmanTeam.White ? ChessmanTeam.Black : ChessmanTeam.White;
-    }
     private void Start()
     {
         turn = ChessmanTeam.White;
@@ -181,70 +177,28 @@ public class Board : MonoBehaviour
         }
     }
 
+    #region "Helper"
     private Vector3 GetTileCenter(int col, int row)
     {
         return new Vector3(col * tileSize, yOffset, row * tileSize) - bounds + centerChessmanOffset;
     }
 
-    private void MoveTo(int originalColumn, int originalRow, int destinationColumn, int destinationRow)
+    private ChessmanTeam GetNextTurnTeam()
     {
-
-        Chessman currentChessman = chessmans[originalColumn, originalRow];
-        Vector2Int previousPosotion = new Vector2Int(originalColumn, originalRow);
-        if (chessmans[destinationColumn, destinationRow] != null)
-        {
-            Chessman opponentChessman = chessmans[destinationColumn, destinationRow];
-            if (currentChessman.team == opponentChessman.team)
-            {
-                return;
-            }
-            else
-            {
-                if (opponentChessman.team == ChessmanTeam.White)
-                {
-                    deadBlacks.Add(opponentChessman);
-                    opponentChessman.SetLocalScale(Vector3.one * deathSize);
-                    opponentChessman.SetPosition(
-                        new Vector3(8 * tileSize, yOffset, -1 * tileSize) - bounds
-                        + new Vector3(tileSize / 2, 0, tileSize / 2)
-                        + (Vector3.forward * deathChessmanSpaceBetween) * deadWhites.Count);
-                }
-                else
-                {
-                    deadWhites.Add(opponentChessman);
-                    opponentChessman.SetLocalScale(Vector3.one * deathSize);
-                    opponentChessman.SetPosition(
-                        new Vector3(-1 * tileSize, yOffset, 8 * tileSize) - bounds
-                        + new Vector3(tileSize / 2, 0, tileSize / 2)
-                        + (Vector3.back * deathChessmanSpaceBetween) * deadBlacks.Count);
-                }
-                // not happened
-                if (opponentChessman.type == ChessmanType.King)
-                {
-                    Victory(opponentChessman.team);
-                }
-            }
-        }
-        chessmans[destinationColumn, destinationRow] = currentChessman;
-        chessmans[previousPosotion.x, previousPosotion.y] = null;
-        PositionSingleChessman(destinationColumn, destinationRow, false, true);
-        moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(destinationColumn, destinationRow) });
-        SolveSpecialMove();
-        if (CheckMate())
-        {
-            Victory(turn);
-        }
-        if (currentlyPicked)
-            currentlyPicked = null;
-        RemoveHighlightTiles();
-        turn = (turn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
-        if (isLocalGame)
-        {
-            onlineTurn = (onlineTurn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
-        }
-        return;
+        return turn == ChessmanTeam.White ? ChessmanTeam.Black : ChessmanTeam.White;
     }
 
+    private Vector2Int LoockupTileIndex(GameObject hitInfo)
+    {
+        for (int x = 0; x < WIDTH; x++)
+            for (int y = 0; y < WIDTH; y++)
+                if (tiles[x, y] == hitInfo)
+                    return new Vector2Int(x, y);
+        return INVALID_HOVER;
+    }
+    #endregion
+
+    #region "Sub constructor"
     private void GenerateTiles(float tileSize, int width)
     {
         yOffset += transform.position.y;
@@ -326,7 +280,9 @@ public class Board : MonoBehaviour
 
         return chessman;
     }
+    #endregion
 
+    #region "Move Solving"
     private void PositionAllChessmans()
     {
         for (int row = 0; row < WIDTH; row++)
@@ -340,6 +296,18 @@ public class Board : MonoBehaviour
         chessmans[col, row].currentRow = row;
         chessmans[col, row].currentColumn = col;
         chessmans[col, row].SetPosition(GetTileCenter(col, row), force, isMove);
+    }
+
+    private bool ContainsValidMove(ref List<Vector2Int> moves, Vector2Int pos)
+    {
+        for (int i = 0; i < moves.Count; i++)
+        {
+            if (moves[i].x == pos.x && moves[i].y == pos.y)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void SolveSpecialMove()
@@ -415,7 +383,67 @@ public class Board : MonoBehaviour
         }
     }
 
-    #region "Highlight available move tiles"
+    private void MoveTo(int originalColumn, int originalRow, int destinationColumn, int destinationRow)
+    {
+
+        Chessman currentChessman = chessmans[originalColumn, originalRow];
+        Vector2Int previousPosotion = new Vector2Int(originalColumn, originalRow);
+        if (chessmans[destinationColumn, destinationRow] != null)
+        {
+            Chessman opponentChessman = chessmans[destinationColumn, destinationRow];
+            if (currentChessman.team == opponentChessman.team)
+            {
+                return;
+            }
+            else
+            {
+                if (opponentChessman.team == ChessmanTeam.White)
+                {
+                    deadBlacks.Add(opponentChessman);
+                    opponentChessman.SetLocalScale(Vector3.one * deathSize);
+                    opponentChessman.SetPosition(
+                        new Vector3(8 * tileSize, yOffset, -1 * tileSize) - bounds
+                        + new Vector3(tileSize / 2, 0, tileSize / 2)
+                        + (Vector3.forward * deathChessmanSpaceBetween) * deadWhites.Count);
+                }
+                else
+                {
+                    deadWhites.Add(opponentChessman);
+                    opponentChessman.SetLocalScale(Vector3.one * deathSize);
+                    opponentChessman.SetPosition(
+                        new Vector3(-1 * tileSize, yOffset, 8 * tileSize) - bounds
+                        + new Vector3(tileSize / 2, 0, tileSize / 2)
+                        + (Vector3.back * deathChessmanSpaceBetween) * deadBlacks.Count);
+                }
+                // not happened
+                if (opponentChessman.type == ChessmanType.King)
+                {
+                    Victory(opponentChessman.team);
+                }
+            }
+        }
+        chessmans[destinationColumn, destinationRow] = currentChessman;
+        chessmans[previousPosotion.x, previousPosotion.y] = null;
+        PositionSingleChessman(destinationColumn, destinationRow, false, true);
+        moveList.Add(new Vector2Int[] { previousPosotion, new Vector2Int(destinationColumn, destinationRow) });
+        SolveSpecialMove();
+        if (CheckMate())
+        {
+            Victory(turn);
+        }
+        if (currentlyPicked)
+            currentlyPicked = null;
+        RemoveHighlightTiles();
+        turn = (turn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
+        if (isLocalGame)
+        {
+            onlineTurn = (onlineTurn == ChessmanTeam.White) ? ChessmanTeam.Black : ChessmanTeam.White;
+        }
+        return;
+    }
+    #endregion
+
+    #region "Highlight moves"
     private void HighlightTiles()
     {
         for (int i = 0; i < availableMoves.Count; i++)
@@ -436,6 +464,7 @@ public class Board : MonoBehaviour
     }
     #endregion
 
+    #region "Check solving"
     private void PreventCheck()
     {
         Chessman targetKing = null;
@@ -583,6 +612,7 @@ public class Board : MonoBehaviour
         }
         return false;
     }
+    #endregion
 
     #region "Victory UI solving"
     private void Victory(ChessmanTeam team)
@@ -608,10 +638,10 @@ public class Board : MonoBehaviour
             whiteRm.wantRematch = 1;
             Client.Instance.SendToServer(whiteRm);
 
-            NetRematch BlackRm = new NetRematch();
-            BlackRm.team = ChessmanTeam.Black; // 1 for black
-            BlackRm.wantRematch = 1;
-            Client.Instance.SendToServer(BlackRm);
+            NetRematch blackRm = new NetRematch();
+            blackRm.team = ChessmanTeam.Black; // 1 for black
+            blackRm.wantRematch = 1;
+            Client.Instance.SendToServer(blackRm);
         }
         else
         {
@@ -665,8 +695,11 @@ public class Board : MonoBehaviour
 
         SpawnAllChessmans();
         PositionAllChessmans();
+        playerCount = 0;
         turn = ChessmanTeam.White;
-        onlineTurn = ChessmanTeam.Black; // there is no body in the room, first join will update this turn
+        if (isLocalGame) {
+            onlineTurn = ChessmanTeam.White;
+        }
     }
 
     public void OnMenuButton()
@@ -686,28 +719,7 @@ public class Board : MonoBehaviour
     }
     #endregion
 
-    private bool ContainsValidMove(ref List<Vector2Int> moves, Vector2Int pos)
-    {
-        for (int i = 0; i < moves.Count; i++)
-        {
-            if (moves[i].x == pos.x && moves[i].y == pos.y)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Vector2Int LoockupTileIndex(GameObject hitInfo)
-    {
-        for (int x = 0; x < WIDTH; x++)
-            for (int y = 0; y < WIDTH; y++)
-                if (tiles[x, y] == hitInfo)
-                    return new Vector2Int(x, y);
-        return INVALID_HOVER;
-    }
-
-    #region "Online game solving"
+    #region "Online solving"
     private void RegisterEvents()
     {
         NetUtility.S_WELCOME += OnWelcomeServer;
@@ -784,7 +796,7 @@ public class Board : MonoBehaviour
         // assign team
         // turn = nw.AssignedTeam;
         onlineTurn = nw.AssignedTeam;
-        // Debug.Log($"My assigned team is {nw.AssignedTeam}");
+        
         if (isLocalGame && onlineTurn == ChessmanTeam.White)
         {
             Server.Instance.Broadcast(new NetStartGame());
@@ -818,7 +830,7 @@ public class Board : MonoBehaviour
         NetRematch rm = msg as NetRematch;
 
         playerConfirmRematch[(int)rm.team] = rm.wantRematch == 1;
-
+        // ?
         if (rm.team != onlineTurn)
         {
             rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
