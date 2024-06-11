@@ -19,12 +19,12 @@ public class Board : MonoBehaviour
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip captureSound;
 
     [Header("Prefabs & Materials")]
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] private Material[] teamMaterials;
-
-
 
     private Chessman[,] chessmans;
     private Chessman currentlyPicked;
@@ -420,6 +420,8 @@ public class Board : MonoBehaviour
                 {
                     Victory(opponentChessman.team);
                 }
+                audioSource.clip = captureSound;
+                audioSource.Play(0);
             }
         }
         chessmans[destinationColumn, destinationRow] = currentChessman;
