@@ -1,48 +1,55 @@
-using UnityEngine;
-using Unity.Networking.Transport;
-using Unity.Collections;
 using System;
+using Net.Message;
+using Unity.Collections;
+using Unity.Networking.Transport;
+using UnityEngine;
 
-public enum OpCode {
-    KEEP_ALIVE = 1,
-    WELCOME = 2,
-    START_GAME = 3,
-    MAKE_MOVE = 4,
-    REMATCH = 5
-}
-
-public static class NetUtility
+namespace Net
 {
-    public static void OnData(DataStreamReader stream, NetworkConnection nc, Server server = null) {
-        NetMessage msg = null;
-        var opCode = (OpCode) stream.ReadByte();
-        switch (opCode) {
-            case OpCode.KEEP_ALIVE: msg = new NetKeepAlive(stream); break;
-            case OpCode.WELCOME: msg = new NetWelcome(stream); break;
-            case OpCode.START_GAME: msg = new NetStartGame(stream); break;
-            case OpCode.MAKE_MOVE: msg = new NetMakeMove(stream); break;
-            case OpCode.REMATCH: msg = new NetRematch(stream); break;
-            default:
-                Debug.LogError("Message received had no OpCode");
-                break;
-        }
-
-        if (server != null) {
-            msg.ReceivedOnServer(nc);
-        } else {
-            msg.ReceivedOnClient();
-        }
+    public enum OpCode {
+        KeepAlive = 1,
+        Welcome = 2,
+        StartGame = 3,
+        MakeMove = 4,
+        Rematch = 5
     }
 
-    // Net messages
-    public static Action<NetMessage> C_KEEP_ALIVE;
-    public static Action<NetMessage> C_WELCOME;
-    public static Action<NetMessage> C_START_GAME;
-    public static Action<NetMessage> C_MAKE_MOVE;
-    public static Action<NetMessage> C_REMATCH;
-    public static Action<NetMessage, NetworkConnection> S_KEEP_ALIVE;
-    public static Action<NetMessage, NetworkConnection> S_WELCOME;
-    public static Action<NetMessage, NetworkConnection> S_START_GAME;
-    public static Action<NetMessage, NetworkConnection> S_MAKE_MOVE;
-    public static Action<NetMessage, NetworkConnection> S_REMATCH;
+    public static class NetUtility
+    {
+        public static void OnData(DataStreamReader stream, NetworkConnection nc, Server server = null) {
+            NetMessage msg = null;
+            var opCode = (OpCode) stream.ReadByte();
+            switch (opCode) {
+                case OpCode.KeepAlive: msg = new NetKeepAlive(stream); break;
+                case OpCode.Welcome: msg = new NetWelcome(stream); break;
+                case OpCode.StartGame: msg = new NetStartGame(stream); break;
+                case OpCode.MakeMove: msg = new NetMakeMove(stream); break;
+                case OpCode.Rematch: msg = new NetRematch(stream); break;
+                default:
+                    Debug.LogError("Message received had no OpCode");
+                    break;
+            }
+            if (msg == null)
+                return;
+            if (server != null) {
+                msg.ReceivedOnServer(nc);
+            } else {
+                msg.ReceivedOnClient();
+            }
+        }
+
+        // Net messages
+        // Client
+        public static Action<NetMessage> CKeepAlive;
+        public static Action<NetMessage> CWelcome;
+        public static Action<NetMessage> CStartGame;
+        public static Action<NetMessage> CMakeMove;
+        public static Action<NetMessage> CRematch;
+        // Server
+        public static Action<NetMessage, NetworkConnection> SKeepAlive;
+        public static Action<NetMessage, NetworkConnection> SWelcome;
+        public static Action<NetMessage, NetworkConnection> SStartGame;
+        public static Action<NetMessage, NetworkConnection> SMakeMove;
+        public static Action<NetMessage, NetworkConnection> SRematch;
+    }
 }

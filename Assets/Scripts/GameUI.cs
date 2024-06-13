@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Net;
+using Net.Message;
 using TMPro;
 
 public enum CameraAngle
@@ -13,7 +13,7 @@ public enum CameraAngle
 
 public class GameUI : MonoBehaviour
 {
-    public static GameUI Instance { set; get; }
+    public static GameUI Instance { private set; get; }
 
     public Server server;
     public Client client;
@@ -23,6 +23,10 @@ public class GameUI : MonoBehaviour
     [SerializeField] private GameObject[] cameraAngles;
 
     public Action<bool> SetLocalGame;
+    private static readonly int InGameMenu = Animator.StringToHash("InGameMenu");
+    private static readonly int StartMenu = Animator.StringToHash("StartMenu");
+    private static readonly int OnlineMenu = Animator.StringToHash("OnlineMenu");
+    private static readonly int HostMenu = Animator.StringToHash("HostMenu");
 
     private void Awake()
     {
@@ -32,9 +36,9 @@ public class GameUI : MonoBehaviour
 
     public void ChangeCamera(CameraAngle index)
     {
-        for (int i = 0; i < cameraAngles.Length; i++)
+        foreach (var angle in cameraAngles)
         {
-            cameraAngles[i].SetActive(false);
+            angle.SetActive(false);
         }
         Debug.Log(index);
         cameraAngles[(int)index].SetActive(true);
@@ -47,7 +51,7 @@ public class GameUI : MonoBehaviour
 
     public void OnLocalGameButton()
     {
-        menuAnimator.SetTrigger("InGameMenu");
+        menuAnimator.SetTrigger(InGameMenu);
         SetLocalGame?.Invoke(true);
         server.Init(8007);
         client.Init("127.0.0.1", 8007);
@@ -55,7 +59,7 @@ public class GameUI : MonoBehaviour
 
     public void OnCoOpGameButton()
     { // OnOnlineGameButton
-        menuAnimator.SetTrigger("OnlineMenu");
+        menuAnimator.SetTrigger(OnlineMenu);
     }
 
     public void OnOnlineHostButton()
@@ -63,7 +67,7 @@ public class GameUI : MonoBehaviour
         SetLocalGame?.Invoke(false);
         server.Init(8007);
         client.Init("127.0.0.1", 8007);
-        menuAnimator.SetTrigger("HostMenu");
+        menuAnimator.SetTrigger(HostMenu);
     }
 
     public void OnOnlineConnectButton()
@@ -74,20 +78,20 @@ public class GameUI : MonoBehaviour
 
     public void OnOnlineBackButton()
     {
-        menuAnimator.SetTrigger("StartMenu");
+        menuAnimator.SetTrigger(StartMenu);
     }
 
     public void OnHostBackButton()
     {
         server.Shutdown();
         client.Shutdown();
-        menuAnimator.SetTrigger("OnlineMenu");
+        menuAnimator.SetTrigger(OnlineMenu);
     }
 
     public void OnLeaveFromInGameMenu()
     {
         ChangeCamera(CameraAngle.Menu);
-        menuAnimator.SetTrigger("StartMenu");
+        menuAnimator.SetTrigger(StartMenu);
         client.Shutdown();
         server.Shutdown();
     }
@@ -95,17 +99,17 @@ public class GameUI : MonoBehaviour
     #region 
     private void RegisterEvents()
     {
-        NetUtility.C_START_GAME += OnStartGameClient; ;
+        NetUtility.CStartGame += OnStartGameClient;
     }
 
     private void UnRegisterEvents()
     {
-        NetUtility.C_START_GAME -= OnStartGameClient; ;
+        NetUtility.CStartGame -= OnStartGameClient;
     }
 
     private void OnStartGameClient(NetMessage msg)
     {
-        menuAnimator.SetTrigger("InGameMenu");
+        menuAnimator.SetTrigger(InGameMenu);
         generalLayout.gameObject.SetActive(false);
     }
     #endregion
