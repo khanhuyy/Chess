@@ -58,20 +58,18 @@ public class Board : MonoBehaviour
     private void Start()
     {
         turn = ChessPieceTeam.White;
-        GenerateTiles(Width);
+        GenerateTiles(Width / 2);
         SpawnAllChessPieces();
         PositionAllChessPieces();
         RegisterEvents();
+        if (!currentCamera)
+        {
+            currentCamera = Camera.main;
+        }
     }
 
     private void Update()
     {
-        if (!currentCamera)
-        {
-            currentCamera = Camera.main;
-            return;
-        }
-
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var info, 100, LayerMask.GetMask("Tile", "Hover", "HighlightTile")))
         {
@@ -210,6 +208,7 @@ public class Board : MonoBehaviour
     {
         yOffset += transform.position.y;
         bounds = new Vector3(boundWidth * tileSize, 0, boundWidth * tileSize) + boardCenter;
+        Debug.Log(bounds);
         centerChessmanOffset = new Vector3(0.5f, 0, 0.5f);
         tiles = new GameObject[Width, Width];
         for (int row = 0; row < Width; row++)
@@ -237,7 +236,7 @@ public class Board : MonoBehaviour
         vertices[2] = new Vector3((col + 1) * tileSize, yOffset, row * tileSize) - bounds;
         vertices[3] = new Vector3((col + 1) * tileSize, yOffset, (row + 1) * tileSize) - bounds;
 
-        int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
+        int[] tris = { 0, 1, 2, 1, 3, 2 };
 
         mesh.vertices = vertices;
         mesh.triangles = tris;
@@ -281,13 +280,16 @@ public class Board : MonoBehaviour
 
     private ChessPiece.ChessPiece SpawnSingleChessman(ChessPieceType type, ChessPieceTeam team)
     {
-        ChessPiece.ChessPiece chessPiece = Instantiate(prefabs[(int)type - 1], transform).GetComponent<ChessPiece.ChessPiece>();
+        Instantiate(prefabs[(int)type - 1], transform).TryGetComponent(out ChessPiece.ChessPiece chessPiece);
         if (chessPiece)
         {
             chessPiece.gameObject.name = $"{team} {type}";
             chessPiece.type = type;
             chessPiece.team = team;
-            chessPiece.GetComponent<MeshRenderer>().material = teamMaterials[(int)team];
+            if (chessPiece.TryGetComponent(out MeshRenderer meshRenderer))
+            {
+                meshRenderer.material = teamMaterials[(int)team];
+            }
         }
 
         return chessPiece;

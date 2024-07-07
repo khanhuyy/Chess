@@ -40,7 +40,6 @@ public class GameUI : MonoBehaviour
         {
             angle.SetActive(false);
         }
-        Debug.Log(index);
         cameraAngles[(int)index].SetActive(true);
     }
 
