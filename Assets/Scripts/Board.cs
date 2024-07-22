@@ -15,7 +15,8 @@ public class Board : MonoBehaviour
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 0.1f;
     [SerializeField] private Vector3 boardCenter = Vector3.zero;
-    [SerializeField] private float deathSize = 0.3f;
+    [SerializeField] private float deathSize = 0.5f;
+    [SerializeField] private float deathHeightOffset = -0.8f;
     [SerializeField] private float deathChessmanSpaceBetween = 0.3f;
     [SerializeField] private float dragOffset = 1f;
     [SerializeField] private GameObject victoryScreen;
@@ -341,7 +342,7 @@ public class Board : MonoBehaviour
                         deadWhites.Add(opponentPawn);
                         opponentPawn.SetLocalScale(Vector3.one * deathSize);
                         opponentPawn.SetPosition(
-                            new Vector3(8 * tileSize, yOffset, -1 * tileSize) - bounds
+                            new Vector3(8 * tileSize, deathHeightOffset, -1 * tileSize) - bounds
                             + new Vector3(tileSize / 2, 0, tileSize / 2)
                             + Vector3.forward * (deathChessmanSpaceBetween * deadWhites.Count));
                         break;
@@ -349,7 +350,7 @@ public class Board : MonoBehaviour
                         deadBlacks.Add(opponentPawn);
                         opponentPawn.SetLocalScale(Vector3.one * deathSize);
                         opponentPawn.SetPosition(
-                            new Vector3(-1 * tileSize, yOffset, 8 * tileSize) - bounds
+                            new Vector3(-1 * tileSize, deathHeightOffset, 8 * tileSize) - bounds
                             + new Vector3(tileSize / 2, 0, tileSize / 2)
                             + Vector3.back * (deathChessmanSpaceBetween * deadBlacks.Count));
                         break;
@@ -416,7 +417,7 @@ public class Board : MonoBehaviour
                     deadBlacks.Add(opponentChessPiece);
                     opponentChessPiece.SetLocalScale(Vector3.one * deathSize);
                     opponentChessPiece.SetPosition(
-                        new Vector3(8 * tileSize, yOffset, -1 * tileSize) - bounds
+                        new Vector3(8 * tileSize, deathHeightOffset, -1 * tileSize) - bounds
                         + new Vector3(tileSize / 2, 0, tileSize / 2)
                         + Vector3.forward * (deathChessmanSpaceBetween * deadWhites.Count));
                 }
@@ -425,7 +426,7 @@ public class Board : MonoBehaviour
                     deadWhites.Add(opponentChessPiece);
                     opponentChessPiece.SetLocalScale(Vector3.one * deathSize);
                     opponentChessPiece.SetPosition(
-                        new Vector3(-1 * tileSize, yOffset, 8 * tileSize) - bounds
+                        new Vector3(-1 * tileSize, deathHeightOffset, 8 * tileSize) - bounds
                         + new Vector3(tileSize / 2, 0, tileSize / 2)
                         + Vector3.back * (deathChessmanSpaceBetween * deadBlacks.Count));
                 }
