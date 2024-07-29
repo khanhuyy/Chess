@@ -21,6 +21,9 @@ public class Board : MonoBehaviour
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
+    private GameObject currentKeyboardTile;
+
+    [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip captureSound;
     [SerializeField] private AudioClip moveSound;
@@ -35,10 +38,10 @@ public class Board : MonoBehaviour
 
     private ChessPiece.ChessPiece[,] chessPieces;
     private ChessPiece.ChessPiece currentlyPicked;
-    private List<Vector2Int> availableMoves = new List<Vector2Int>();
-    private List<ChessPiece.ChessPiece> deadWhites = new List<ChessPiece.ChessPiece>();
-    private List<ChessPiece.ChessPiece> deadBlacks = new List<ChessPiece.ChessPiece>();
-    private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
+    private List<Vector2Int> availableMoves;
+    private List<ChessPiece.ChessPiece> deadWhites;
+    private List<ChessPiece.ChessPiece> deadBlacks;
+    private List<Vector2Int[]> moveList;
     private ChessPieceTeam turn;
     private const int Width = 8;
     private readonly Vector2Int invalidHover = -Vector2Int.one;
@@ -49,7 +52,7 @@ public class Board : MonoBehaviour
     private Vector3 centerChessmanOffset;
     private SpecialMove specialMove;
 
-    // Online game var
+    [Header("Online Game Stuff")]
     private int playerCount;
     private ChessPieceTeam onlineTurn;
     private bool isLocalGame = true;
@@ -59,6 +62,7 @@ public class Board : MonoBehaviour
     {
         turn = ChessPieceTeam.White;
         GenerateTiles(Width / 2);
+        currentKeyboardTile = tiles[0, 0];
         SpawnAllChessPieces();
         PositionAllChessPieces();
         RegisterEvents();
@@ -123,7 +127,7 @@ public class Board : MonoBehaviour
                 if (ContainsValidMove(ref availableMoves, new Vector2Int(hitPosition.x, hitPosition.y)))
                 {
                     MoveTo(previousPosition.x, previousPosition.y, hitPosition.x, hitPosition.y);
-                    // Online impl
+                    // Online impl todo split method
                     NetMakeMove mm = new NetMakeMove
                     {
                         OriginalColumn = previousPosition.x,
@@ -229,7 +233,7 @@ public class Board : MonoBehaviour
         Mesh mesh = new Mesh();
         tileObject.AddComponent<MeshFilter>().mesh = mesh;
         tileObject.AddComponent<MeshRenderer>().material = tileMaterial;
-
+        
         Vector3[] vertices = new Vector3[4];
         vertices[0] = new Vector3(col * tileSize, yOffset, row * tileSize) - bounds;
         vertices[1] = new Vector3(col * tileSize, yOffset, (row + 1) * tileSize) - bounds;

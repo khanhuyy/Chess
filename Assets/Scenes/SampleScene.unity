@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.1815466, g: 0.22718978, b: 0.3074084, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -263,7 +262,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1954868114}
     m_Modifications:
     - target: {fileID: 1332405324491798, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
       propertyPath: m_Name
@@ -287,7 +286,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4714512869554146, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5
+      value: 0.79999995
       objectReference: {fileID: 0}
     - target: {fileID: 4714512869554146, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1354,7 +1353,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &212497828
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4707,6 +4706,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: knight_black
       objectReference: {fileID: 0}
+    - target: {fileID: 1742490947705592, guid: c89aa6cc38b9810479a8725631b865b0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4983862606080266, guid: c89aa6cc38b9810479a8725631b865b0, type: 3}
       propertyPath: m_LocalScale.x
       value: 10
@@ -4943,6 +4946,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 881812162}
   m_CullTransparentMesh: 1
+--- !u!4 &886195827 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4714512869554146, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
+  m_PrefabInstance: {fileID: 10589161}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &886768059
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5052,6 +5060,10 @@ PrefabInstance:
     - target: {fileID: 1432260816013872, guid: f3c7a38518fe4e14d915db07ecf8aabf, type: 3}
       propertyPath: m_Name
       value: pawn_black
+      objectReference: {fileID: 0}
+    - target: {fileID: 1432260816013872, guid: f3c7a38518fe4e14d915db07ecf8aabf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4189871441958412, guid: f3c7a38518fe4e14d915db07ecf8aabf, type: 3}
       propertyPath: m_LocalScale.x
@@ -5274,6 +5286,10 @@ PrefabInstance:
     - target: {fileID: 1793788843620320, guid: 72e326776d07b4f4fa1a5b0da20e6a7b, type: 3}
       propertyPath: m_Name
       value: king_black
+      objectReference: {fileID: 0}
+    - target: {fileID: 1793788843620320, guid: 72e326776d07b4f4fa1a5b0da20e6a7b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4033847003776116, guid: 72e326776d07b4f4fa1a5b0da20e6a7b, type: 3}
       propertyPath: m_LocalScale.x
@@ -5838,6 +5854,10 @@ PrefabInstance:
     - target: {fileID: 1176747802191566, guid: 819d4a16a2f59b94fa0f4ae219f5fb2d, type: 3}
       propertyPath: m_Name
       value: rook_black
+      objectReference: {fileID: 0}
+    - target: {fileID: 1176747802191566, guid: 819d4a16a2f59b94fa0f4ae219f5fb2d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4233933057895486, guid: 819d4a16a2f59b94fa0f4ae219f5fb2d, type: 3}
       propertyPath: m_LocalScale.x
@@ -8794,7 +8814,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &1397401946
 Animator:
   serializedVersion: 5
@@ -8845,7 +8865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -12582,6 +12602,7 @@ Transform:
   - {fileID: 845833906}
   - {fileID: 911802376}
   - {fileID: 889529273}
+  - {fileID: 886195827}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1955547497
@@ -13437,4 +13458,3 @@ SceneRoots:
   - {fileID: 1954868114}
   - {fileID: 1086196416}
   - {fileID: 2058207244}
-  - {fileID: 10589161}
