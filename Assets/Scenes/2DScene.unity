@@ -329,6 +329,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
+--- !u!4 &10589162 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4714512869554146, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
+  m_PrefabInstance: {fileID: 10589161}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &21884414 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4785192122766780, guid: 7e11e78c695eeb947a2e2619a8a5c883, type: 3}
@@ -829,11 +834,6 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4785192122766780, guid: 7e11e78c695eeb947a2e2619a8a5c883, type: 3}
   m_PrefabInstance: {fileID: 187734620}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &133300493 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4714512869554146, guid: b6fabf9112b45984aaa90c0692da1663, type: 3}
-  m_PrefabInstance: {fileID: 10589161}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &137289492 stripped
 Transform:
@@ -1358,7 +1358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &212497828
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8798,7 +8798,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &1397401946
 Animator:
   serializedVersion: 5
@@ -12586,7 +12586,7 @@ Transform:
   - {fileID: 845833906}
   - {fileID: 911802376}
   - {fileID: 889529273}
-  - {fileID: 133300493}
+  - {fileID: 10589162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1955547497
